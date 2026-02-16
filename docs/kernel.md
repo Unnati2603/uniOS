@@ -368,14 +368,3 @@ Currently enables global C++ objects that require initialization before kernel e
 - **Makefile**: Build system configuration
 
 ---
-
-## Summary
-
-`kernel.cpp` is the heart of uniOS. It:
-
-1. ✅ Provides basic text output via VGA
-2. ✅ Handles C++ global constructor initialization
-3. ✅ Receives control from the bootloader
-4. ✅ Maintains kernel execution with an infinite loop
-
-This minimal implementation forms the foundation for future kernel features like memory management, interrupt handling, and device drivers.
