@@ -14,14 +14,7 @@ A 32-bit x86 operating system kernel built from scratch using C++ and x86 assemb
 - **Binary Format**: ELF32-i386
 - **Languages**: C++ (kernel logic), x86 Assembly (bootloader)
 
-### Freestanding Environment
-
-This kernel is built as a freestanding executable with no operating system dependencies:
-
-- No standard library (`-nostdlib`)
-- No C++ runtime features (RTTI, exceptions disabled)
-- No libc function replacements (`-fno-builtin`)
-- Direct hardware access (VGA memory at 0xB8000)
+Freestanding Environment: This kernel is built as a freestanding executable with no operating system dependencies
 
 ## Build System
 
@@ -36,9 +29,8 @@ sudo apt-get install gcc-multilib g++-multilib
 ### Build Commands
 
 ```bash
-make              # Build mykernel.bin
-make install      # Install kernel to /boot (requires sudo)
-make clean        # Remove object files and binary
+make mykernel.bin      # Build iso
+make run     # for qemu
 ```
 
 ### Build Process
@@ -47,11 +39,11 @@ make clean        # Remove object files and binary
 1. Compile: kernel.cpp  -> kernel.o   (g++ -m32 -nostdlib -fno-builtin -fno-rtti -fno-exceptions)
 2. Assemble: loader.s   -> loader.o   (as --32)
 3. Link:     *.o        -> mykernel.bin   (ld -melf_i386 -T linker.dl)
+4. Build iso (or skip 4 and 5 to use QEMU)
+5. Put iso in VM
 ```
 
-# Compiler Flags Explained
 
-See `docs/makefile.md` for detailed flag explanations.
 
 ## Boot Process
 
@@ -132,20 +124,7 @@ sudo make install
 - [GNU Linker Scripts](https://sourceware.org/binutils/docs/ld/Scripts.html)
 - [GCC Options](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html)
 
-## Development Roadmap
-
-- [ ] Initialize Global Descriptor Table (GDT)
-- [ ] Set up Interrupt Descriptor Table (IDT)
-- [ ] Implement keyboard driver
-- [ ] Add memory management (paging, heap)
-- [ ] Implement system call interface
-- [ ] Add multitasking support
-- [ ] Develop filesystem driver
-
 ## License
 
 Educational project for learning OS development.
 
-## Author
-
-Unnati (Unnati2603)
