@@ -6,17 +6,18 @@ The linker script defines the memory layout of the kernel binary. It tells the l
 
 ## Key Directives
 
-| Directive | Value | Purpose |
-|-----------|-------|---------|
-| `ENTRY(loader)` | `loader` | Sets the entry point to the `loader` symbol defined in `loader.s` |
-| `OUTPUT_FORMAT` | `elf32-i386` | Generates 32-bit x86 ELF binary format |
-| `OUTPUT_ARCH` | `i386` | Target architecture is Intel 386 (32-bit x86) |
+| Directive       | Value        | Purpose                                                           |
+| --------------- | ------------ | ----------------------------------------------------------------- |
+| `ENTRY(loader)` | `loader`     | Sets the entry point to the `loader` symbol defined in `loader.s` |
+| `OUTPUT_FORMAT` | `elf32-i386` | Generates 32-bit x86 ELF binary format                            |
+| `OUTPUT_ARCH`   | `i386`       | Target architecture is Intel 386 (32-bit x86)                     |
 
 ## Memory Layout
 
 ### Load Address: `0x00100000` (1MB)
 
 The kernel is loaded at **1MB** in physical memory. This is a common convention:
+
 - **0x00000000 - 0x000003FF**: Real Mode Interrupt Vector Table
 - **0x00000400 - 0x000004FF**: BIOS Data Area
 - **0x00000500 - 0x00007BFF**: Usable memory (but potentially used by BIOS)
@@ -31,6 +32,7 @@ Loading at 1MB avoids conflicts with BIOS, bootloader, and hardware-mapped regio
 ## Section Layout
 
 ### `.text` Section (Code)
+
 ```
 .text :
 {
@@ -43,6 +45,7 @@ Loading at 1MB avoids conflicts with BIOS, bootloader, and hardware-mapped regio
 **Order matters!** The multiboot header must be in the first 8KB of the binary for GRUB to recognize it.
 
 ### `.data` Section (Initialized Data)
+
 ```
 .data :
 {
@@ -50,7 +53,7 @@ Loading at 1MB avoids conflicts with BIOS, bootloader, and hardware-mapped regio
     KEEP(*(.init_array))                        /* C++ global constructors */
     KEEP(*(SORT_BY_INIT_PRIORITY(.init_array))) /* Priority-sorted constructors */
     end_ctors = .;                              /* End of constructors */
-    
+
     *(.data*)                                   /* All initialized data */
 }
 ```
@@ -58,6 +61,7 @@ Loading at 1MB avoids conflicts with BIOS, bootloader, and hardware-mapped regio
 **C++ Constructor Support**: The `start_ctors` and `end_ctors` symbols mark the constructor table boundaries. If you add C++ global objects, you'll need to call these constructors manually in your kernel initialization code.
 
 ### `.bss` Section (Uninitialized Data)
+
 ```
 .bss :
 {
@@ -68,6 +72,7 @@ Loading at 1MB avoids conflicts with BIOS, bootloader, and hardware-mapped regio
 The `.bss` section holds zero-initialized data like your kernel stack. It doesn't take space in the binary file - the bootloader zeros it out when loading.
 
 ### Discarded Sections
+
 ```
 /DISCARD/ :
 {
@@ -98,6 +103,7 @@ kernel.cpp:              ├──> Linker Script ──> mykernel.bin
 ```
 
 The linker uses this script to:
+
 1. Place multiboot header at the very beginning
 2. Put all code after it
 3. Organize data sections
@@ -106,12 +112,12 @@ The linker uses this script to:
 
 ## Common Issues
 
-| Problem | Cause | Solution |
-|---------|-------|----------|
-| GRUB doesn't detect kernel | Multiboot header not in first 8KB | Ensure `*(.multiboot)` is first in `.text` section |
-| Kernel crashes on boot | Wrong load address | Keep `. = 0x00100000` for standard setup |
-| Global C++ objects don't initialize | Constructor table not called | Call constructors between `start_ctors` and `end_ctors` in kernel initialization |
-| Binary size too large | Including debug/comment sections | Add more sections to `/DISCARD/` |
+| Problem                             | Cause                             | Solution                                                                         |
+| ----------------------------------- | --------------------------------- | -------------------------------------------------------------------------------- |
+| GRUB doesn't detect kernel          | Multiboot header not in first 8KB | Ensure `*(.multiboot)` is first in `.text` section                               |
+| Kernel crashes on boot              | Wrong load address                | Keep `. = 0x00100000` for standard setup                                         |
+| Global C++ objects don't initialize | Constructor table not called      | Call constructors between `start_ctors` and `end_ctors` in kernel initialization |
+| Binary size too large               | Including debug/comment sections  | Add more sections to `/DISCARD/`                                                 |
 
 ## Further Reading
 
