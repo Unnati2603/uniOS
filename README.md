@@ -1,6 +1,7 @@
-# uniOS
-
 in progress... why did i start this?
+
+
+# uniOS
 
 A 32-bit x86 operating system kernel built from scratch using C++ and x86 assembly. The kernel is Multiboot-compliant and boots via GRUB.
 
