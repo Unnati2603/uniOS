@@ -19,7 +19,8 @@
 # .global loader : makes loader visible to linker
 
 .section .text
-.extern kernelMain          
+.extern kernelMain     
+.extern callConstructors     
 .global loader
 
 
@@ -27,6 +28,9 @@
 # /loader: sets stack ptr {WHy? cause its not set- grub dosent know where}; params passed (magic no and ptr to multiboot info so when cpp func runs kernelMain(multiboot_structure, magicnumber)); call kernel main transfers exection to C++
 loader: 
     mov $kernel_stack ,%esp
+
+    call callConstructors
+
     push %eax
     push %ebx
     call kernelMain
